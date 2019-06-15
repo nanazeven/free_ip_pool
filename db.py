@@ -64,13 +64,20 @@ class RedisClient:
         '''
         return self.db.zadd(redis_key, {proxy: setting.MAX_SCORE})
 
-    def count(self, redis_key):
+    def count_valid(self, redis_key):
         '''
         获取可用代理数量
         :return: count
         '''
 
         return len(self.db.zrangebyscore(redis_key, setting.MAX_SCORE, setting.MAX_SCORE))
+
+    def count(self, redis_key):
+        """
+        获取代理数量
+        :return: 数量
+        """
+        return self.db.zcard(redis_key)
 
     def all(self, redis_key):
         '''

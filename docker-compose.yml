@@ -2,12 +2,14 @@ version: "2"
 services:
   db:
     image: redis
+    container_name: ip_pool_redis
     volumes:
       - /tmp/ip_pool_data_backup:/data
     restart: always
 
   pool:
     build: .
+    container_name: ip_pool
     ports:
       - '5000:5000'
     volumes:
