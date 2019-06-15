@@ -208,9 +208,9 @@ def get_html(url, encoding="utf-8", proxies=None, **kwargs):
             return resp.content.decode(encoding)
             # return resp.text
         else:
-            print('get_html fail in {}: '.format(url))
+            logger.warning("网页下载失败：{}".format(url))
     except Exception as e:
-        print('get_html error in {}: '.format(url), e)
+        logger.warning("网页下载报错：{}".format(url))
         return None
 
 # if __name__ == '__main__':

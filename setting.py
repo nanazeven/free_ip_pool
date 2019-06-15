@@ -1,18 +1,20 @@
 
-REDIS_HOST = "db"
+# REDIS_HOST = "db"
+REDIS_HOST = "192.168.141.133"
 REDIS_POST = "6379"
 REDIS_PASSWORD = None
 
 REDIS_KEY_HTTP = "http_free_ip_pool"
 REDIS_KEY_HTTPS = "https_free_ip_pool"
 
+MAX_SCORE = 10
+INIT_SCORE = 5
 MIN_SCORE = 0
-MAX_SCORE = 100
-INIT_SCORE = 10
+
 
 TEST_URL = 'http://www.baidu.com'
 
-TEST_SIZE = 10
+HTTP_VERIFY_SIZE = 30
 
 API_HOST = '0.0.0.0'
 API_PORT = '5000'
