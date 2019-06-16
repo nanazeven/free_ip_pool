@@ -5,6 +5,7 @@ import aiohttp
 import time
 from log import logger
 
+
 class Verify:
 
     def __init__(self):
@@ -26,16 +27,13 @@ class Verify:
                 async with session.get(setting.TEST_URL, proxy=re_proxy, timeout=6,
                                        allow_redirects=False) as resp:
                     if resp.status in [200, 302]:
-                        logger.info("{}池：{}： ok 100点".format(redis_key, proxy))
-                        # print(proxy, redis_key, "ok 100点")
+                        print("{}||{}池：{}： ok 100点".format(time.ctime(), redis_key, proxy))
                         self.db.max(redis_key, proxy)
                     else:
-                        logger.info("{}池：{}： fail -1点".format(redis_key,proxy))
-                        # print(proxy, redis_key, "fail -1点")
+                        print("{}||{}池：{}： fail -1点".format(time.ctime(), redis_key, proxy))
                         self.db.decrease(redis_key, proxy)
             except (aiohttp.ClientError, aiohttp.ClientConnectorError, asyncio.TimeoutError) as e:
-                # print(proxy, redis_key, "error -1点", e)
-                logger.info("{}池：{}： error -1点".format(redis_key, proxy))
+                print("{}||{}池：{}： error -1点".format(time.ctime(), redis_key, proxy))
                 self.db.decrease(redis_key, proxy)
 
     # async def run_by_redis(self, redis_key):
@@ -71,7 +69,7 @@ class Verify:
         if part == 3:
             stop = count
         try:
-            print("{}开始验证{}-{}".format(setting.REDIS_KEY_HTTP, start, stop))
+            logger.info("{}开始验证{}-{}".format(setting.REDIS_KEY_HTTP, start, stop))
 
             for i in range(start, stop, setting.HTTP_VERIFY_SIZE):
                 proxies = self.db.batch(setting.REDIS_KEY_HTTP, i, i + setting.HTTP_VERIFY_SIZE)
@@ -79,14 +77,14 @@ class Verify:
                 tasks = [self.verify_proxy(setting.REDIS_KEY_HTTP, proxy) for proxy in proxies]
                 loop.run_until_complete(asyncio.wait(tasks))
 
-            print("{}验证完成{}-{}耗时：{}".format(setting.REDIS_KEY_HTTP, start, stop, time.time() - stime))
+            logger.info("{}验证完成{}-{}耗时：{}".format(setting.REDIS_KEY_HTTP, start, stop, time.time() - stime))
         except Exception as e:
-            print('{}验证报错{}-{}：{}'.format(setting.REDIS_KEY_HTTP, start, stop, e))
+            logger.info('{}验证报错{}-{}：{}'.format(setting.REDIS_KEY_HTTP, start, stop, e))
 
     def run_verify_https(self):
         stime = time.time()
         try:
-            print("{}开始验证".format(setting.REDIS_KEY_HTTPS))
+            logger.info("{}开始验证".format(setting.REDIS_KEY_HTTPS))
 
             count = self.db.count(setting.REDIS_KEY_HTTPS)
             for i in range(0, count, setting.HTTP_VERIFY_SIZE):
@@ -95,6 +93,6 @@ class Verify:
                 tasks = [self.verify_proxy(setting.REDIS_KEY_HTTPS, proxy) for proxy in proxies]
                 loop.run_until_complete(asyncio.wait(tasks))
 
-            print("{}验证完成,耗时：{}".format(setting.REDIS_KEY_HTTPS, time.time() - stime))
+            logger.info("{}验证完成,耗时：{}".format(setting.REDIS_KEY_HTTPS, time.time() - stime))
         except Exception as e:
-            print('{}验证报错：{}'.format(setting.REDIS_KEY_HTTPS, e))
+            logger.warning('{}验证报错：{}'.format(setting.REDIS_KEY_HTTPS, e))

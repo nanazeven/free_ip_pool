@@ -1,7 +1,11 @@
-import logging
+import logging,logging.handlers
+import datetime
 
-logger = logging.getLogger()
+logger = logging.getLogger('pool')
 logger.setLevel(logging.INFO)
-fh = logging.FileHandler('./log.log', mode="a")
-fh.setFormatter(logging.Formatter('%(asctime)s - %(filename)s[Line:%(lineno)d] - %(levelname)s: %(message)s'))
-logger.addHandler(fh)
+rh = logging.handlers.RotatingFileHandler('./logs/pool.log', maxBytes=500, backupCount=5,encoding='utf-8')
+rh.setFormatter(logging.Formatter('%(asctime)s - %(filename)s[Line:%(lineno)d] - %(levelname)s: %(message)s'))
+
+
+
+logger.addHandler(rh)
