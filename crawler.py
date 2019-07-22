@@ -1,6 +1,7 @@
 from db import RedisClient
 from setting import REDIS_KEY_HTTPS, REDIS_KEY_HTTP
 from log import logger
+# import logging
 from urllib.parse import urljoin
 import requests
 import re
@@ -31,6 +32,7 @@ class CrawlerMetaclass(type):
 class Crawler(metaclass=CrawlerMetaclass):
     def __init__(self):
         self.db = RedisClient()
+        pass
 
     def run(self):
         # if self.db.is_over_maxinum(REDIS_KEY_HTTP) :
@@ -40,9 +42,11 @@ class Crawler(metaclass=CrawlerMetaclass):
             try:
                 for res in eval('self.{}()'.format(callback)):
                     if res['type'].upper() == 'HTTP':
-                        self.db.add(REDIS_KEY_HTTP, res['proxy'])
+                        print(res['proxy'])
+                        # self.db.add(REDIS_KEY_HTTP, res['proxy'])
                     else:
-                        self.db.add(REDIS_KEY_HTTPS, res['proxy'])
+                        print(res['proxy'])
+                        # self.db.add(REDIS_KEY_HTTPS, res['proxy'])
             except Exception as e:
                 logger.warning("{}爬虫方法报错：{}".format(callback, e))
 
@@ -56,6 +60,18 @@ class Crawler(metaclass=CrawlerMetaclass):
     #     for proxy in eval('self.{}()'.format(callback)):
     #         proxies.append(proxy)
     #     return proxies
+
+    def xila(self):
+        start_url = 'http://www.xiladaili.com/https/{}/'
+        for i in range(1,3):
+            html_ = get_html(start_url.format(i))
+            if not html_:
+                return
+            doc = etree.HTML(html_)
+            tr_list = doc.xpath("//tbody/tr")
+            for tr in tr_list:
+                ip = tr.xpath("./td[1]/text()")[0]
+                yield {'prexy': ip, 'type': "HTTPS"}
 
     def crawl_dali66(self):
         start_url = "http://www.66ip.cn/nmtq.php?getnum=300&isp=0&anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=1&api=66ip"
@@ -213,11 +229,13 @@ def get_html(url, encoding="utf-8", proxies=None, **kwargs):
         logger.warning("网页下载报错：{}".format(url))
         return None
 
+
 # if __name__ == '__main__':
 #     c = Crawler()
 #     res = []
+#     # c.run()
 #     # c.crawl_dali66()
-#     for i in c.crawl_crossdaili():
+#     for i in c.xila():
 #         print(i)
 #         res.append(i)
 #     print(len(res))
