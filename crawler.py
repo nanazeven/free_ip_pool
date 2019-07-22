@@ -50,16 +50,6 @@ class Crawler(metaclass=CrawlerMetaclass):
             except Exception as e:
                 logger.warning("{}爬虫方法报错：{}".format(callback, e))
 
-    # def run_crawl(self, callback):
-    #     '''
-    #     执行下面定义代理网站爬虫
-    #     :param callback:
-    #     :return: []
-    #     '''
-    #     proxies = []
-    #     for proxy in eval('self.{}()'.format(callback)):
-    #         proxies.append(proxy)
-    #     return proxies
 
     def xila(self):
         start_url = 'http://www.xiladaili.com/https/{}/'
